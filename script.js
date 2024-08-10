@@ -1,4 +1,3 @@
-// Global Variables
 const NUM_ROWS = 9;
 const NUM_COLS = 9;
 const NUM_MINES = 10;
@@ -37,7 +36,6 @@ function resetStopwatch() {
     document.getElementById('time').textContent = "00:00";
 }
 
-// Event Listeners
 const resetButton = document.querySelector('.reset');
 resetButton.addEventListener('click', () => {
     board = [];
@@ -47,8 +45,8 @@ resetButton.addEventListener('click', () => {
     resetButton.innerHTML = `
         <img src="images/smilie-2.png" alt="img" height="43" style="padding:0 2px; padding-top: 2px;">
     `;
+    document.querySelector('.win').innerHTML = ''
     
-    // Stop and reset sounds
     bombSound.pause();
     bombSound.currentTime = 0;
     
@@ -117,6 +115,7 @@ function render() {
             tile.className = 'tile';
             if (board[row][col].isRevealed) {
                 tile.classList.add('revealed');
+
                 if (board[row][col].isMine) {
                     tile.classList.add('mine');
                     tile.style.backgroundImage = 'url("/images/bomb.ico")';
@@ -126,7 +125,8 @@ function render() {
                     document.querySelector('.reset').innerHTML = `
                         <img src="images/sad.png" alt="img" height="43" style="padding:0 2px; padding-top: 2px;">
                     `;
-                    clearInterval(timeInterval); // Pause the timer when a bomb is found
+                    clearInterval(timeInterval);
+
                 } else if (board[row][col].count > 0) {
                     tile.innerText = board[row][col].count;
                     if (tile.innerText == '3') {
@@ -147,7 +147,6 @@ function render() {
         gameBoard.appendChild(br);
     }
 }
-
 // Game Logic
 function revealTile(row, col) {
     if (gameOver) return;
@@ -160,15 +159,14 @@ function revealTile(row, col) {
         !board[row][col].isRevealed
     ) {
         if (!timerStarted) {
-            startStopwatch(); // Start the timer on the first click
+            startStopwatch(); 
             timerStarted = true;
         }
-        
         board[row][col].isRevealed = true;
 
         if (board[row][col].isMine) {
-            bombSound.play(); // Play bomb sound if a bomb is revealed
-            gameOver = true; // Set the game over flag
+            bombSound.play(); 
+            gameOver = true; 
             for (let r = 0; r < NUM_ROWS; r++) {
                 for (let c = 0; c < NUM_COLS; c++) {
                     if (board[r][c].isMine) {
@@ -177,7 +175,9 @@ function revealTile(row, col) {
                 }
             }
         } else {
-            clickSound.play(); // Play click sound for non-bomb tiles
+            flag = true;
+            clickSound.play();
+
             if (board[row][col].count === 0) {
                 for (let dx = -1; dx <= 1; dx++) {
                     for (let dy = -1; dy <= 1; dy++) {
@@ -200,12 +200,14 @@ function revealTile(row, col) {
 
             if (revealedTiles === totalSafeTiles) {
                 gameOver = true;
-                winSound.play(); // Play win sound when all non-mine tiles are revealed
+                winSound.play();
+                document.querySelector('.win').innerHTML = `<img src="images/crown.png" alt="img" height="55">`;
             }
         }
         render();
     }
 }
+
 
 // Initialize and Render the Game Board
 initializeBoard();
