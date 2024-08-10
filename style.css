@@ -107,4 +107,8 @@ body {
   color: #ff4747;
   font-family: 'Russo One', sans-serif;
 }
-
+@media only screen and (max-width: 481px) {
+	.board-container {
+    padding: 20px 0;
+  }
+}
