@@ -1,35 +1,110 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-  }
-  .board {
-    display: inline-block;
-    margin: 20px;
-  }
-  .tile {
-    width: 30px;
-    height: 30px;
-    border: 1px solid #ccc;
-    display: inline-block;
-    text-align: center;
-    vertical-align: middle;
-    font-size: 20px;
-    cursor: pointer;
-  
-    /* Default color for unrevealed tiles */
-    background-color: #eee;
-  
-    /* Default color for unrevealed tile text */
-    color: #333;
-  }
-  .revealed {
-    /* Color for revealed tiles */
-    background-color: #ccc;
-  
-    /* Color for revealed tile text */
-    color: #000;
-  }
-  .mine {
-    /* Color for mines */
-    background-color: #ff3333;
-  }
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #2b2c3d, #4e4f6e);
+}
+
+.board-container {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+#game-board {
+  border: 8px inset #6f7387;
+  height: 22.2rem;
+  width: 22.2rem;
+  margin: 0 auto;
+  background-color: #2b2c3d;
+  border-radius: 10px;
+}
+
+.tile {
+  width: 37.65px;
+  height: 37.4px;
+  border: 5px outset #5c6379;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 20px;
+  cursor: pointer;
+  background-color: #474c61;
+  color: #333;
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+
+.tile:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.revealed {
+  border: 2px solid #1b1c24;
+  background-color: #393d4d;
+  color: white;
+  font-weight: bolder;
+  font-size: 1.9rem;
+}
+
+.tile.mine {
+  background-color: transparent; 
+  background-size: contain; 
+}
+
+.reset {
+  padding: 0.3rem 0.6rem;
+  font-size: 1.5rem;
+  border: 5px outset #5c6379;
+  background-color: #2b2c3d;
+  color: white;
+  margin: 0.5rem;
+  outline: none;
+  border-radius: 10px;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.reset:active {
+  transform: scale(0.93);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  background-color: #3b3c4e;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.score {
+  background-color: #1b1c24;
+  font-family: "Fjalla One", sans-serif;
+  font-weight: 500;
+  font-size: 2.2rem;
+  color: white;
+  margin-right: 15px;
+  margin-left: 10px;
+  padding: 10px;
+  width: 7rem;
+  height: 4rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#time {
+  color: #ff4747;
+  font-family: 'Russo One', sans-serif;
+}
+

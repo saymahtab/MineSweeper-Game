@@ -6,11 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MineSweeper</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fjalla+One&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+    </style>
 </head>
 <body>
-    <h1>MineSweeper</h1>
-    
-    <div id="game-board"></div>
+    <div class="container">
+        <div class="board-container">
+            <div class="buttons">
+                <div class="score"></div>
+                <button type="reset" class="reset">
+                    <img src="images/smilie-2.png" alt="img" height="43" style="padding:0 2px; padding-top: 2px;">
+                </button>
+                <div class="score">
+                    <p id="time">00:00</p>
+                </div>
+            </div>
+            <div id="game-board"></div>
+        </div>
+    </div>
+    <audio id="click-sound" src="sounds/click.mp3"></audio>
+    <audio id="bomb-sound" src="sounds/game-over.mp3"></audio>
+    <audio id="win-sound" src="sounds/win1.mp3"></audio>
 </body>
 <script src="script.js"></script>
 </html>
