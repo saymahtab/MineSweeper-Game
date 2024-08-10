@@ -1,7 +1,7 @@
 // Global Variables
 const NUM_ROWS = 9;
 const NUM_COLS = 9;
-const NUM_MINES = 1;
+const NUM_MINES = 10;
 
 let board = [];
 let gameOver = false;
