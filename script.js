@@ -118,7 +118,7 @@ function render() {
 
                 if (board[row][col].isMine) {
                     tile.classList.add('mine');
-                    tile.style.backgroundImage = 'url("/images/bomb.ico")';
+                    tile.style.backgroundImage = 'url("images/bomb.ico")';
                     tile.style.backgroundSize = 'cover';
                     tile.style.backgroundRepeat = 'no-repeat';
                     tile.style.backgroundPosition = 'center';
