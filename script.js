@@ -59,16 +59,18 @@ resetButton.addEventListener('click', () => {
 // Game Initialization and Rendering
 function initializeBoard() {
     for (let row = 0; row < NUM_ROWS; ++row) {
-        board[row] = [];
+        const numRow = []
         for (let col = 0; col < NUM_COLS; ++col) {
-            board[row][col] = {
+            numRow.push({
                 isMine: false,
                 isRevealed: false,
                 count: 0,
-            };
+            });
         }
+        board.push(numRow)
     }
 
+    //placing mines randomly
     let mines = 0;
     while (mines < NUM_MINES) {
         const randomRow = Math.floor(Math.random() * NUM_ROWS);
@@ -79,25 +81,26 @@ function initializeBoard() {
             mines++;
         }
     }
-
+    //counting mines adjuscent
+    const directions = [
+        [-1, -1], [-1, 0], [-1, 1],
+        [0, -1], [0, 1], [1, -1],
+        [1, 0], [1, 1],
+    ];
     for (let row = 0; row < NUM_ROWS; ++row) {
         for (let col = 0; col < NUM_COLS; ++col) {
             if (!board[row][col].isMine) {
                 let count = 0;
-                for (let dx = -1; dx <= 1; dx++) {
-                    for (let dy = -1; dy <= 1; dy++) {
-                        const iLoc = row + dx;
-                        const jLoc = col + dy;
 
-                        if (
-                            iLoc >= 0 &&
-                            iLoc < NUM_ROWS &&
-                            jLoc >= 0 &&
-                            jLoc < NUM_COLS &&
-                            board[iLoc][jLoc].isMine
-                        ) {
-                            count++;
-                        }
+                for(const [dx, dy] of directions) {
+                    const iLoc = row + dx;
+                    const jLoc = col + dy;
+
+                    if(iLoc >= 0 && iLoc < NUM_ROWS &&
+                        jLoc >= 0 && jLoc < NUM_COLS &&
+                        board[iLoc][jLoc].isMine
+                    ){
+                        count++;
                     }
                 }
                 board[row][col].count = count;
@@ -149,63 +152,82 @@ function render() {
 }
 // Game Logic
 function revealTile(row, col) {
-    if (gameOver) return;
+    if (gameOver || !isInBounds(row, col) || board[row][col].isRevealed) return;
 
-    if (
-        row >= 0 &&
-        row < NUM_ROWS &&
-        col >= 0 &&
-        col < NUM_COLS &&
-        !board[row][col].isRevealed
-    ) {
-        if (!timerStarted) {
-            startStopwatch(); 
-            timerStarted = true;
-        }
-        board[row][col].isRevealed = true;
-
-        if (board[row][col].isMine) {
-            bombSound.play(); 
-            gameOver = true; 
-            for (let r = 0; r < NUM_ROWS; r++) {
-                for (let c = 0; c < NUM_COLS; c++) {
-                    if (board[r][c].isMine) {
-                        board[r][c].isRevealed = true;
-                    }
-                }
-            }
-        } else {
-            flag = true;
-            clickSound.play();
-
-            if (board[row][col].count === 0) {
-                for (let dx = -1; dx <= 1; dx++) {
-                    for (let dy = -1; dy <= 1; dy++) {
-                        revealTile(row + dx, col + dy);
-                    }
-                }
-            }
-
-            // Check for a win
-            let revealedTiles = 0;
-            let totalSafeTiles = NUM_ROWS * NUM_COLS - NUM_MINES;
-
-            for (let r = 0; r < NUM_ROWS; r++) {
-                for (let c = 0; c < NUM_COLS; c++) {
-                    if (board[r][c].isRevealed && !board[r][c].isMine) {
-                        revealedTiles++;
-                    }
-                }
-            }
-
-            if (revealedTiles === totalSafeTiles) {
-                gameOver = true;
-                winSound.play();
-                document.querySelector('.win').innerHTML = `<img src="images/crown.png" alt="img" height="55">`;
-            }
-        }
-        render();
+    if (!timerStarted) {
+        startStopwatch(); 
+        timerStarted = true;
     }
+    board[row][col].isRevealed = true;
+
+    if (board[row][col].isMine) {
+       handleMineReveal();
+    }
+    else {
+        clickSound.play();
+        revealNeighbors(row, col);
+    }
+    if (checkForWin()) {
+        handleWin();
+    }
+    render();
+}
+
+function isInBounds(row, col) {
+    return row >= 0 && row < NUM_ROWS && col >= 0 && col < NUM_COLS;
+}
+
+function handleMineReveal() {
+    bombSound.play();
+    gameOver = true;
+    for (let r = 0; r < NUM_ROWS; r++) {
+        for (let c = 0; c < NUM_COLS; c++) {
+            if (board[r][c].isMine) {
+                board[r][c].isRevealed = true;
+            }
+        }
+    }
+}
+function revealNeighbors(row, col) {
+    const queue = [[row, col]]; 
+
+    while (queue.length > 0) { 
+        const [r, c] = queue.shift(); 
+
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+                const newRow = r + dx;
+                const newCol = c + dy;
+
+                if (isInBounds(newRow, newCol) && !board[newRow][newCol].isRevealed && !board[newRow][newCol].isMine) {
+                    board[newRow][newCol].isRevealed = true;
+
+                    if (board[newRow][newCol].count === 0) {
+                        queue.push([newRow, newCol]);
+                    }
+                }
+            }
+        }
+    }
+}
+function checkForWin() {
+    let revealedTiles = 0;
+    const totalSafeTiles = NUM_ROWS * NUM_COLS - NUM_MINES;
+
+    for (let r = 0; r < NUM_ROWS; r++) {
+        for (let c = 0; c < NUM_COLS; c++) {
+            if (board[r][c].isRevealed && !board[r][c].isMine) {
+                revealedTiles++;
+            }
+        }
+    }
+
+    return revealedTiles === totalSafeTiles;
+}
+function handleWin() {
+    gameOver = true;
+    winSound.play();
+    document.querySelector('.win').innerHTML = `<img src="images/crown.png" alt="img" height="55">`;
 }
 
 
