@@ -45,7 +45,7 @@ resetButton.addEventListener('click', () => {
     resetButton.innerHTML = `
         <img src="images/smilie-2.png" alt="img" height="43" style="padding:0 2px; padding-top: 2px;">
     `;
-    document.querySelector('.win').innerHTML = ''
+    document.querySelector('.win').innerHTML = '';
     
     bombSound.pause();
     bombSound.currentTime = 0;
@@ -59,7 +59,7 @@ resetButton.addEventListener('click', () => {
 // Game Initialization and Rendering
 function initializeBoard() {
     for (let row = 0; row < NUM_ROWS; ++row) {
-        const numRow = []
+        const numRow = [];
         for (let col = 0; col < NUM_COLS; ++col) {
             numRow.push({
                 isMine: false,
@@ -67,10 +67,10 @@ function initializeBoard() {
                 count: 0,
             });
         }
-        board.push(numRow)
+        board.push(numRow);
     }
 
-    //placing mines randomly
+    // Placing mines randomly
     let mines = 0;
     while (mines < NUM_MINES) {
         const randomRow = Math.floor(Math.random() * NUM_ROWS);
@@ -81,7 +81,8 @@ function initializeBoard() {
             mines++;
         }
     }
-    //counting mines adjuscent
+
+    // Counting adjacent mines
     const directions = [
         [-1, -1], [-1, 0], [-1, 1],
         [0, -1], [0, 1], [1, -1],
@@ -91,15 +92,11 @@ function initializeBoard() {
         for (let col = 0; col < NUM_COLS; ++col) {
             if (!board[row][col].isMine) {
                 let count = 0;
-
-                for(const [dx, dy] of directions) {
+                for (const [dx, dy] of directions) {
                     const iLoc = row + dx;
                     const jLoc = col + dy;
 
-                    if(iLoc >= 0 && iLoc < NUM_ROWS &&
-                        jLoc >= 0 && jLoc < NUM_COLS &&
-                        board[iLoc][jLoc].isMine
-                    ){
+                    if (isInBounds(iLoc, jLoc) && board[iLoc][jLoc].isMine) {
                         count++;
                     }
                 }
@@ -129,16 +126,9 @@ function render() {
                         <img src="images/sad.png" alt="img" height="43" style="padding:0 2px; padding-top: 2px;">
                     `;
                     clearInterval(timeInterval);
-
                 } else if (board[row][col].count > 0) {
                     tile.innerText = board[row][col].count;
-                    if (tile.innerText == '3') {
-                        tile.style.color = '#FF6B6B';
-                    } else if (tile.innerText == '2') {
-                        tile.style.color = '#74E291';
-                    } else {
-                        tile.style.color = '#96C9F4';
-                    }
+                    tile.style.color = getColor(board[row][col].count);
                 }
             }
             tile.addEventListener('click', () => {
@@ -150,6 +140,15 @@ function render() {
         gameBoard.appendChild(br);
     }
 }
+
+function getColor(count) {
+    switch (count) {
+        case 2: return '#74E291';
+        case 3: return '#FF6B6B';
+        default: return '#96C9F4';
+    }
+}
+
 // Game Logic
 function revealTile(row, col) {
     if (gameOver || !isInBounds(row, col) || board[row][col].isRevealed) return;
@@ -161,11 +160,12 @@ function revealTile(row, col) {
     board[row][col].isRevealed = true;
 
     if (board[row][col].isMine) {
-       handleMineReveal();
-    }
-    else {
+        handleMineReveal();
+    } else {
         clickSound.play();
-        revealNeighbors(row, col);
+        if (board[row][col].count === 0) {
+            revealNeighbors(row, col);
+        }
     }
     if (checkForWin()) {
         handleWin();
@@ -188,6 +188,7 @@ function handleMineReveal() {
         }
     }
 }
+
 function revealNeighbors(row, col) {
     const queue = [[row, col]]; 
 
@@ -202,7 +203,7 @@ function revealNeighbors(row, col) {
                 if (isInBounds(newRow, newCol) && !board[newRow][newCol].isRevealed && !board[newRow][newCol].isMine) {
                     board[newRow][newCol].isRevealed = true;
 
-                    if (board[newRow][newCol].count === 0) {
+                    if (board[newRow][newCol].count === 0) {    
                         queue.push([newRow, newCol]);
                     }
                 }
@@ -210,6 +211,7 @@ function revealNeighbors(row, col) {
         }
     }
 }
+
 function checkForWin() {
     let revealedTiles = 0;
     const totalSafeTiles = NUM_ROWS * NUM_COLS - NUM_MINES;
@@ -224,12 +226,12 @@ function checkForWin() {
 
     return revealedTiles === totalSafeTiles;
 }
+
 function handleWin() {
     gameOver = true;
     winSound.play();
     document.querySelector('.win').innerHTML = `<img src="images/crown.png" alt="img" height="55">`;
 }
-
 
 // Initialize and Render the Game Board
 initializeBoard();
